@@ -52,7 +52,9 @@ public class FournisseurServiceImpl implements FournisseurService {
     }
     @Override
     public void deleteFournisseur(Long id){
-       fournisseurRepository.deleteById(id);
+        Fournisseur existing = fournisseurRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Fournisseur non trouvé"));
+       fournisseurRepository.delete(existing);
     }
     @Override
     public Optional<FournisseurDTO>getFournisseurById(Long id){

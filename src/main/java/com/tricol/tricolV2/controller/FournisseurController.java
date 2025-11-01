@@ -1,14 +1,12 @@
 package com.tricol.tricolV2.controller;
 
 import com.tricol.tricolV2.dto.FournisseurDTO;
-import com.tricol.tricolV2.entity.Fournisseur;
 import com.tricol.tricolV2.exception.NotFoundException;
 import com.tricol.tricolV2.service.FournisseurServiceImpl;
 import jakarta.validation.Valid;
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
 
 
 @RestController
@@ -38,8 +36,13 @@ public class FournisseurController {
     @PutMapping("/{id}")
     public ResponseEntity<FournisseurDTO>updateFournisseur(@PathVariable("id") Long id , @Valid @RequestBody FournisseurDTO fournisseurDTO){
         FournisseurDTO dto = fournisseurService.updateFournisseur(id, fournisseurDTO);
-
         return  ResponseEntity.ok().body(dto);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable("id") Long id){
+        fournisseurService.deleteFournisseur(id);
+        String message = "Fournisseur supprimé avec succès";
+        return ResponseEntity.ok().body(Map.of("message" , message));
+    }
 }
