@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  backend:
+    build: ./backend-java
+    container_name: backend_java
+    ports:
+      - "8081:8081"
+    networks:
+      - fullstack-net
+
+  microservice:
+    build: ./microservice-dart
+    container_name: microservice_dart
+    ports:
+      - "8082:8082"
+    networks:
+      - fullstack-net
+
+  frontend:
+    build: ./frontend-flutter
+    container_name: frontend_flutter
+    ports:
+      - "8080:80"
+    networks:
+      - fullstack-net
+
+networks:
+  fullstack-net:
+    driver: bridge
