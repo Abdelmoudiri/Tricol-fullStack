@@ -3,7 +3,10 @@ package com.tricol.backend_java.controllers;
 
 
 import com.tricol.backend_java.dto.FournisseurDTO;
+import com.tricol.backend_java.exceptions.GlobalExceptionHandler;
+import com.tricol.backend_java.exceptions.ResourceNotFoundException;
 import com.tricol.backend_java.services.FournisseurService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,8 +23,14 @@ public class FournisseurController {
     @Autowired
     private FournisseurService fournisseurService;
 
+
     @PostMapping
-    public ResponseEntity<FournisseurDTO> create(@Validated @RequestBody FournisseurDTO dto) {
+    public ResponseEntity<FournisseurDTO> create(@Valid @RequestBody FournisseurDTO dto) {
+        if (fournisseurService.getById(dto.getId())!=null)
+        {
+            throw new ResourceNotFoundException("le email deja trouve dans la base de donnée");
+        }
+
         FournisseurDTO created = fournisseurService.create(dto);
         return ResponseEntity.created(URI.create("/api/fournisseurs/" + created.getId())).body(created);
     }
