@@ -44,7 +44,7 @@ public class GlobalExceptionHandler  {
     {
 
         Map<String,Object> map=Map.of(
-                "status","404",
+                "status",e,
                 "path",web.getContextPath(),
                 "message",e.getMessage(),
                 "time", LocalDateTime.now()
