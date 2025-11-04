@@ -26,7 +26,8 @@ public class FournisseurController {
 
     @PostMapping
     public ResponseEntity<FournisseurDTO> create(@Valid @RequestBody FournisseurDTO dto) {
-        if (fournisseurService.getById(dto.getId())!=null)
+
+        if (fournisseurService.existsByEmail(dto.getEmail()))
         {
             throw new ResourceNotFoundException("le email deja trouve dans la base de donnée");
         }
