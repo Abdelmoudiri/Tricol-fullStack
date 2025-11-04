@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FournisseurServiceImpl implements FournisseurService {
@@ -54,5 +56,11 @@ public class FournisseurServiceImpl implements FournisseurService {
     @Override
     public Page<FournisseurDTO> getAll(Pageable pageable) {
         return fournisseurRepository.findAll(pageable).map(fournisseurMapper::toDto);
+    }
+
+    @Override
+    public Boolean existsByEmail(String email)
+    {
+        return fournisseurRepository.existsByEmail(email);
     }
 }
