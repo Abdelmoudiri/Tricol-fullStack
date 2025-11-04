@@ -19,13 +19,16 @@ public class Fournisseur {
     private Long id;
 
     @NotBlank
+    @Column(nullable = false)
     private String societe;
 
     private String adresse;
 
     private String contact;
 
-    @Email
+    @NotBlank(message = "le email est obligatoire pour la creation")
+    @Column(nullable = false,unique = true)
+    @Email(message = "format email non valide")
     private String email;
 
     private String telephone;
