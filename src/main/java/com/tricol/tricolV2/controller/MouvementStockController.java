@@ -26,18 +26,19 @@ public class MouvementStockController {
         return mouvementService.getPaged(pageable);
     }
 
-    @GetMapping(params = "produitId")
+    @GetMapping("/by-produit")
     public Page<MouvementStockDTO> byProduit(@RequestParam Long produitId, @ParameterObject Pageable pageable) {
         return mouvementService.getByProduit(produitId, pageable);
     }
 
-    @GetMapping(params = "commandeId")
+    @GetMapping("/by-commande")
     public Page<MouvementStockDTO> byCommande(@RequestParam Long commandeId, @ParameterObject Pageable pageable) {
         return mouvementService.getByCommande(commandeId, pageable);
     }
 
-    @GetMapping(params = "type")
+    @GetMapping("/by-type")
     public Page<MouvementStockDTO> byType(@RequestParam TypeMouvement type, @ParameterObject Pageable pageable) {
         return mouvementService.getByType(type, pageable);
     }
 }
+
