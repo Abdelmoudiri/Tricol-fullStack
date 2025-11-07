@@ -1,0 +1,19 @@
+# Development profile - use local DB and permissive schema handling
+spring:
+  profiles: dev
+
+  datasource:
+    url: jdbc:mysql://localhost:3307/tricol_v2?createDatabaseIfNotExist=true
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+
+  liquibase:
+    enabled: true
+
+# You can add dev-only properties below

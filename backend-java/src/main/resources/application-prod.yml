@@ -1,0 +1,19 @@
+# Production profile - prefer environment variables and safe schema handling
+spring:
+  profiles: prod
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://mysql-tricol:3306/tricol_v2}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+
+  liquibase:
+    enabled: true
+
+# Add prod-only properties below (logging, monitoring, etc.)
