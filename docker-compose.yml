@@ -10,7 +10,7 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: root
     ports:
-      - "3307:3306"  # 3307 pour hôte, 3306 dans Docker
+      - "3307:3306"  
     networks:
       - tricol-network
     healthcheck:
