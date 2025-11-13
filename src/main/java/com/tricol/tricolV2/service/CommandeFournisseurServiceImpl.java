@@ -48,16 +48,16 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         this.mouvementStockService = mouvementStockService;
     }
 
+
     @Override
     public CommandeFournisseurDTO create(CommandeFournisseurDTO dto) {
         Fournisseur fournisseur = fournisseurRepository.findById(dto.getFournisseurId())
                 .orElseThrow(() -> new NotFoundException("Fournisseur non trouvé avec l'id : " + dto.getFournisseurId()));
 
         CommandeFournisseur entity = commandeMapper.toEntity(dto);
-        entity.setId(null);
+        // entity.setId(null);
         entity.setFournisseur(fournisseur);
 
-        // Ensure bidirectional association is set before persisting
         if (entity.getLignes() != null) {
             for (LigneCommandeFournisseur ligne : entity.getLignes()) {
                 ligne.setCommande(entity);
@@ -126,10 +126,9 @@ public class CommandeFournisseurServiceImpl implements CommandeFournisseurServic
         CommandeFournisseur existing = commandeRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Commande non trouvée avec l'id : " + id));
         boolean wasLivree = existing.getStatut() == StatutCommande.LIVREE;
-        // If moving to LIVREE, ensure stock movements succeed BEFORE persisting status change
         if (!wasLivree && statut == StatutCommande.LIVREE) {
             if (!mouvementStockService.movementsExistForCommande(existing.getId())) {
-                // Will throw BusinessException if stock insufficient; transaction will rollback
+
                 mouvementStockService.createEntriesForCommande(existing);
             }
         }
