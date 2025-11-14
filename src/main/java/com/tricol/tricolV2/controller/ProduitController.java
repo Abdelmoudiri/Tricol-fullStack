@@ -79,6 +79,10 @@ public class ProduitController {
         return ResponseEntity.ok(produits);
     }
 
+    @GetMapping("/countProduit")
+    public Long coutProduit(){
+        return produitService.cout();
+    }
     @Operation(
             summary = "Récupérer les produits avec pagination",
             description = "Permet de récupérer les produits de manière paginée avec contrôle du nombre d'éléments par page"
