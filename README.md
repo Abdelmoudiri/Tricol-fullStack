@@ -161,11 +161,33 @@ src/main/java/com/tricol/tricolV2/
 
 ## 🧪 Tests
 
-Pour exécuter les tests unitaires et d'intégration :
+### Stratégie de test
+
+- **Unitaires (JUnit 5 + Mockito)**: ciblent la logique métier dans les services (`FournisseurServiceImpl`, `ProduitServiceImpl`, `CommandeFournisseurServiceImpl`, `MouvementStockServiceImpl`). Les repositories sont mockés; on ne teste pas les DAO isolément.
+- **Intégration (Spring Boot Test + MockMvc + Testcontainers)**: vérifient les endpoints REST, le câblage Spring, Liquibase et les interactions réelles avec MySQL en conteneur.
+- **Couverture (JaCoCo)**: un rapport est généré à chaque `mvn test` pour mesurer les lignes/branches couvertes.
+
+### Lancer les tests
+
+Prérequis: **Docker** en cours d'exécution (Testcontainers démarre MySQL automatiquement).
 
 ```bash
-mvn test
+mvn clean test
 ```
+
+Les tests d'intégration démarrent un MySQL 8 éphémère et appliquent les changelogs Liquibase.
+
+### Interprétation des résultats
+
+- **Sortie Maven**: affiche les tests passés/échoués/ignorés.
+- **Rapport JaCoCo**: ouvrir `target/site/jacoco/index.html` dans un navigateur.
+  - Contrôler la couverture des classes critiques (services et contrôleurs).
+  - Les repositories ne sont pas évalués en isolation.
+
+### Périmètre couvert actuellement
+
+- Unitaires: fournisseurs (CRUD, erreurs), produits (création avec mouvement d'entrée, pagination), commandes (calcul du total, changement de statut), mouvements de stock (cas insuffisant et cas heureux).
+- Intégration: produits (création + listing), fournisseurs (CRUD + recherches), commandes (création, passage à `LIVREE`, vérification des mouvements).
 
 ## 📄 Migration de Base de Données
 
