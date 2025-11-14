@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/mouvements")
+@RequestMapping("/api/v2/mouvements")
 @Tag(name = "Mouvements de Stock", description = "API pour la consultation des mouvements de stock")
 public class MouvementStockController {
 
