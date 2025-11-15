@@ -1,7 +1,6 @@
 package com.tricol.tricolV2.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tricol.tricolV2.config.AbstractIntegrationTest;
 import com.tricol.tricolV2.dto.CommandeFournisseurDTO;
 import com.tricol.tricolV2.dto.FournisseurDTO;
 import com.tricol.tricolV2.dto.LigneCommandeDTO;
@@ -24,7 +23,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class CommandeFournisseurControllerIT extends AbstractIntegrationTest {
+class CommandeFournisseurControllerIT {
 
     @Autowired
     MockMvc mockMvc;

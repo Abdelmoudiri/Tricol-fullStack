@@ -1,7 +1,6 @@
 package com.tricol.tricolV2.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.tricol.tricolV2.config.AbstractIntegrationTest;
 import com.tricol.tricolV2.dto.ProduitDTO;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class ProduitControllerIT extends AbstractIntegrationTest {
+class ProduitControllerIT {
 
     @Autowired
     MockMvc mockMvc;
