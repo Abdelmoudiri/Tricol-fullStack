@@ -1,208 +1,412 @@
-# Tricol Suppliers - API REST de Gestion des Commandes Fournisseurs
+# 🏢 Tricol V2 - Système de Gestion des Fournisseurs et Stock
 
-## 📋 Description
+Application Spring Boot pour la gestion des fournisseurs, commandes, produits et mouvements de stock avec valorisation CUMP (Coût Unitaire Moyen Pondéré).
 
-**Tricol Suppliers** est une application Spring Boot qui fournit une API REST complète pour la gestion des commandes fournisseurs, des produits et des mouvements de stock pour l'entreprise Tricol. Cette application permet de gérer efficacement les relations avec les fournisseurs, le suivi des commandes, la gestion des stocks et la valorisation des produits.
+## 📋 Table des Matières
 
-## 🎯 Fonctionnalités Principales
+- [Fonctionnalités](#-fonctionnalités)
+- [Technologies](#-technologies)
+- [Prérequis](#-prérequis)
+- [Installation](#-installation)
+- [Configuration](#-configuration)
+- [Exécution](#-exécution)
+- [Tests](#-tests)
+- [Documentation API](#-documentation-api)
+- [Structure du Projet](#-structure-du-projet)
+- [Valorisation du Stock](#-valorisation-du-stock)
 
-- **Gestion des Fournisseurs** : Création, modification, consultation et suppression des fournisseurs
-- **Gestion des Produits** : Gestion complète du catalogue de produits avec suivi des stocks
-- **Gestion des Commandes Fournisseurs** : Création et suivi des commandes avec leurs lignes de commande
-- **Gestion des Mouvements de Stock** : Suivi des entrées et sorties de stock avec différentes méthodes de valorisation
-- **Valorisation des Stocks** : Support de plusieurs méthodes de valorisation (FIFO, Coût moyen, etc.)
+## ✨ Fonctionnalités
 
-## 🛠️ Technologies Utilisées
+### 🏭 Gestion des Fournisseurs
+- CRUD complet des fournisseurs
+- Recherche par société, ville, ICE
+- Pagination et filtrage avancé
 
-- **Java** : 17
-- **Spring Boot** : 3.3.4
-- **Spring Data JPA** : Gestion de la persistance des données
-- **MySQL** : Base de données relationnelle
-- **Liquibase** : Gestion des migrations de base de données
-- **MapStruct** : Mapping automatique entre entités et DTOs
-- **Lombok** : Réduction du code boilerplate
-- **SpringDoc OpenAPI** : Documentation interactive de l'API (Swagger UI)
-- **Jakarta Bean Validation** : Validation des données d'entrée
+### 📦 Gestion des Produits
+- CRUD complet des produits
+- Gestion automatique du stock
+- Calcul automatique du coût unitaire moyen (CUMP)
+- Recherche par nom, catégorie, prix
+- Alertes de stock (stock faible/élevé)
 
-## 📦 Prérequis
+### 🛒 Gestion des Commandes Fournisseurs
+- Création de commandes avec lignes de commande
+- Gestion du cycle de vie (EN_ATTENTE, EN_COURS, LIVREE, ANNULEE)
+- Allocation automatique du stock lors de la livraison
+- Calcul automatique des montants
+- Recherche par statut, fournisseur, période
 
-Avant de commencer, assurez-vous d'avoir installé :
+### 📊 Mouvements de Stock
+- Traçabilité complète (ENTREE/SORTIE)
+- Historique des mouvements par produit
+- Association aux commandes fournisseurs
+- Filtrage par type, produit, commande
 
-- **JDK 17** ou supérieur
-- **Maven 3.6+**
-- **MySQL 8.0+** (ou une base de données MySQL compatible)
-- **Git** (pour cloner le projet)
+## 🛠 Technologies
 
-## 🚀 Installation et Configuration
+- **Backend**: Spring Boot 3.3.4
+- **Base de données**: MySQL 8 (Production) / H2 (Tests)
+- **ORM**: Hibernate / JPA
+- **Migrations**: Liquibase
+- **Mapping**: MapStruct 1.5.5
+- **Validation**: Jakarta Validation
+- **Documentation API**: Swagger/OpenAPI 3
+- **Tests**: JUnit 5, Mockito, MockMvc
+- **Build**: Maven
+- **Containerisation**: Docker
+
+## 📋 Prérequis
+
+- Java 17 ou supérieur
+- Maven 3.8+
+- MySQL 8.0+ (ou Docker)
+- Git
+
+## 🚀 Installation
 
 ### 1. Cloner le projet
-
 ```bash
-git clone <url-du-repository>
-cd tricolV2
+git clone https://github.com/Abdelmoudiri/Tricol-fullStack.git
+cd TricolV2_test
 ```
 
-### 2. Configuration de la base de données
+### 2. Configurer la base de données
 
-1. Créer une base de données MySQL nommée `tricol_db` :
-
+#### Option A : MySQL local
 ```sql
-CREATE DATABASE tricol_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE DATABASE tricol_db;
+CREATE USER 'tricol_user'@'localhost' IDENTIFIED BY 'your_password';
+GRANT ALL PRIVILEGES ON tricol_db.* TO 'tricol_user'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
-2. Modifier le fichier `src/main/resources/application.yml` avec vos paramètres de connexion :
+#### Option B : Docker
+```bash
+docker run -d \
+  --name mysql-tricol \
+  -e MYSQL_ROOT_PASSWORD=rootpassword \
+  -e MYSQL_DATABASE=tricol_db \
+  -e MYSQL_USER=tricol_user \
+  -e MYSQL_PASSWORD=your_password \
+  -p 3306:3306 \
+  mysql:8.0
+```
+
+### 3. Configurer l'application
+
+Modifier `src/main/resources/application.yml` :
 
 ```yaml
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/tricol_db?useSSL=false&serverTimezone=UTC
-    username: votre_utilisateur
-    password: votre_mot_de_passe
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/tricol_db
+    username: tricol_user
+    password: your_password
 ```
 
-### 3. Compilation du projet
-
+### 4. Compiler le projet
 ```bash
-mvn clean install
+./mvnw clean install
 ```
 
-Les migrations Liquibase seront exécutées automatiquement au démarrage de l'application.
+## ⚙️ Configuration
 
-## ▶️ Démarrage de l'Application
+### Méthode de Valorisation du Stock
 
-Pour démarrer l'application, exécutez :
+Configurer dans `application.yml` :
 
-```bash
-mvn spring-boot:run
+```yaml
+app:
+  stock:
+    valuation-method: CUMP  # Options: CUMP, FIFO
 ```
 
-Ou utilisez le wrapper Maven :
+- **CUMP** (Coût Unitaire Moyen Pondéré) - Par défaut
+- **FIFO** (First In, First Out) - À implémenter
 
+### Base de données
+
+```yaml
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none  # validate, update, create, none
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.xml
+```
+
+## 🏃 Exécution
+
+### Mode développement
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Sur Windows :
-
+### Avec profil spécifique
 ```bash
-mvnw.cmd spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
 ```
 
-L'application sera accessible sur `http://localhost:8081`
+### Avec Docker
+```bash
+# Build l'image
+docker build -t tricol-app .
 
-## 📚 Documentation de l'API
-
-Une fois l'application démarrée, la documentation interactive de l'API Swagger est accessible à :
-
-- **Swagger UI** : http://localhost:8081/swagger-ui.html
-- **OpenAPI JSON** : http://localhost:8081/v3/api-docs
-
-La documentation Swagger permet de :
-- Visualiser tous les endpoints disponibles
-- Tester les API directement depuis l'interface
-- Consulter les modèles de données (DTOs)
-
-## 🏗️ Architecture du Projet
-
-```
-src/main/java/com/tricol/tricolV2/
-├── config/              # Configurations (Swagger, Liquibase, Propriétés)
-├── controller/          # Contrôleurs REST (API endpoints)
-├── dto/                 # Data Transfer Objects
-├── entity/              # Entités JPA (modèle de données)
-├── exception/           # Gestion des exceptions personnalisées
-├── mapper/              # Mappers MapStruct (DTO ↔ Entity)
-├── repository/          # Repositories Spring Data JPA
-├── service/             # Logique métier
-└── util/                # Utilitaires (valorisation, etc.)
+# Run le conteneur
+docker run -p 8080:8080 \
+  -e SPRING_DATASOURCE_URL=jdbc:mysql://host.docker.internal:3306/tricol_db \
+  -e SPRING_DATASOURCE_USERNAME=tricol_user \
+  -e SPRING_DATASOURCE_PASSWORD=your_password \
+  tricol-app
 ```
 
-## 📊 Diagramme de Classes
+### Package JAR
+```bash
+./mvnw clean package -DskipTests
+java -jar target/tricol-suppliers-1.0.0.jar
+```
 
-<!-- TODO: Ajoutez votre diagramme de classes ici -->
-![Diagramme de Classes](diagramme_de_classe/img.png)
-
-*Diagramme représentant la structure des entités et leurs relations dans le système.*
-
-## 🔗 Planification Jira
-
-<!-- TODO: Ajoutez le lien vers votre planification Jira -->
-🔗 [Accéder à la planification Jira](https://votre-equipe.atlassian.net/jira/software/projects/TRICOL/boarhttps://trico-1761663368871.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog?selectedIssue=SCRUM-36)
-
-*Consultez la planification détaillée, les sprints et les tâches du projet.*
-
-## 📝 Endpoints Principaux
-
-### Fournisseurs
-- `GET /api/fournisseurs` - Liste de tous les fournisseurs
-- `GET /api/fournisseurs/{id}` - Détails d'un fournisseur
-- `POST /api/fournisseurs` - Créer un nouveau fournisseur
-- `PUT /api/fournisseurs/{id}` - Modifier un fournisseur
-- `DELETE /api/fournisseurs/{id}` - Supprimer un fournisseur
-
-### Produits
-- `GET /api/produits` - Liste de tous les produits
-- `GET /api/produits/{id}` - Détails d'un produit
-- `POST /api/produits` - Créer un nouveau produit
-- `PUT /api/produits/{id}` - Modifier un produit
-- `DELETE /api/produits/{id}` - Supprimer un produit
-
-### Commandes Fournisseurs
-- `GET /api/commandes-fournisseurs` - Liste de toutes les commandes
-- `GET /api/commandes-fournisseurs/{id}` - Détails d'une commande
-- `POST /api/commandes-fournisseurs` - Créer une nouvelle commande
-- `PUT /api/commandes-fournisseurs/{id}` - Modifier une commande
-
-### Mouvements de Stock
-- `GET /api/mouvements-stock` - Liste de tous les mouvements
-- `GET /api/mouvements-stock/{id}` - Détails d'un mouvement
-- `POST /api/mouvements-stock` - Enregistrer un nouveau mouvement
+L'application sera accessible sur : `http://localhost:8080`
 
 ## 🧪 Tests
 
-### Stratégie de test
-
-- **Unitaires (JUnit 5 + Mockito)**: ciblent la logique métier dans les services (`FournisseurServiceImpl`, `ProduitServiceImpl`, `CommandeFournisseurServiceImpl`, `MouvementStockServiceImpl`). Les repositories sont mockés; on ne teste pas les DAO isolément.
-- **Intégration (Spring Boot Test + MockMvc + Testcontainers)**: vérifient les endpoints REST, le câblage Spring, Liquibase et les interactions réelles avec MySQL en conteneur.
-- **Couverture (JaCoCo)**: un rapport est généré à chaque `mvn test` pour mesurer les lignes/branches couvertes.
-
-### Lancer les tests
-
-Prérequis: **Docker** en cours d'exécution (Testcontainers démarre MySQL automatiquement).
-
+### Exécuter tous les tests
 ```bash
-mvn clean test
+./mvnw test
 ```
 
-Les tests d'intégration démarrent un MySQL 8 éphémère et appliquent les changelogs Liquibase.
+### Tests unitaires uniquement
+```bash
+./mvnw test -Dtest="*UnitTest"
+```
 
-### Interprétation des résultats
+### Tests d'intégration uniquement
+```bash
+./mvnw test -Dtest="*ControllerTest"
+```
 
-- **Sortie Maven**: affiche les tests passés/échoués/ignorés.
-- **Rapport JaCoCo**: ouvrir `target/site/jacoco/index.html` dans un navigateur.
-  - Contrôler la couverture des classes critiques (services et contrôleurs).
-  - Les repositories ne sont pas évalués en isolation.
+### Tests avec couverture (JaCoCo)
+```bash
+./mvnw clean test jacoco:report
+```
 
-### Périmètre couvert actuellement
+Rapport disponible dans : `target/site/jacoco/index.html`
 
-- Unitaires: fournisseurs (CRUD, erreurs), produits (création avec mouvement d'entrée, pagination), commandes (calcul du total, changement de statut), mouvements de stock (cas insuffisant et cas heureux).
-- Intégration: produits (création + listing), fournisseurs (CRUD + recherches), commandes (création, passage à `LIVREE`, vérification des mouvements).
+### Structure des tests
 
-## 📄 Migration de Base de Données
+```
+src/test/java/
+├── unit/service/              # Tests unitaires des services
+│   ├── FournisseurServiceUnitTest.java
+│   ├── ProduitServiceUnitTest.java
+│   ├── MouvementStockServiceUnitTest.java
+│   └── CommandeFournisseurServiceUnitTest.java
+└── integration/controller/    # Tests d'intégration des contrôleurs
+    ├── FournisseurControllerTest.java
+    ├── ProduitControllerTest.java
+    ├── MouvementStockControllerTest.java
+    └── CommandeFournisseurControllerTest.java
+```
 
-Les migrations de base de données sont gérées par Liquibase. Les fichiers de migration se trouvent dans `src/main/resources/db/changelog/`.
+## 📚 Documentation API
 
-L'application appliquera automatiquement toutes les migrations au démarrage.
+### Swagger UI
+Accessible sur : `http://localhost:8080/swagger-ui.html`
+
+### OpenAPI JSON
+Accessible sur : `http://localhost:8080/v3/api-docs`
+
+### Endpoints principaux
+
+#### Fournisseurs
+- `GET /api/v2/fournisseurs` - Liste tous les fournisseurs
+- `POST /api/v2/fournisseurs` - Créer un fournisseur
+- `GET /api/v2/fournisseurs/{id}` - Détails d'un fournisseur
+- `PUT /api/v2/fournisseurs/{id}` - Modifier un fournisseur
+- `DELETE /api/v2/fournisseurs/{id}` - Supprimer un fournisseur
+
+#### Produits
+- `GET /api/v2/produits` - Liste tous les produits
+- `POST /api/v2/produits` - Créer un produit
+- `GET /api/v2/produits/{id}` - Détails d'un produit
+- `PUT /api/v2/produits/{id}` - Modifier un produit
+- `DELETE /api/v2/produits/{id}` - Supprimer un produit
+- `GET /api/v2/produits/stock/lessThan/{stock}` - Produits en stock faible
+
+#### Commandes Fournisseurs
+- `GET /api/v2/commandes-fournisseur` - Liste toutes les commandes
+- `POST /api/v2/commandes-fournisseur` - Créer une commande
+- `GET /api/v2/commandes-fournisseur/{id}` - Détails d'une commande
+- `PUT /api/v2/commandes-fournisseur/{id}` - Modifier une commande
+- `PUT /api/v2/commandes-fournisseur/{id}/statut` - Changer le statut
+- `DELETE /api/v2/commandes-fournisseur/{id}` - Supprimer une commande
+
+#### Mouvements de Stock
+- `GET /api/v2/mouvements` - Liste tous les mouvements
+- `GET /api/v2/mouvements/by-produit?produitId={id}` - Par produit
+- `GET /api/v2/mouvements/by-commande?commandeId={id}` - Par commande
+- `GET /api/v2/mouvements/by-type?type={ENTREE|SORTIE}` - Par type
+
+## 📁 Structure du Projet
+
+```
+src/main/java/com/tricol/tricolV2/
+├── config/                    # Configuration de l'application
+│   ├── AppProperties.java     # Propriétés personnalisées (CUMP/FIFO)
+│   └── SwaggerConfig.java     # Configuration Swagger
+├── controller/                # Contrôleurs REST
+│   ├── CommandeFournisseure.java
+│   ├── FournisseurController.java
+│   ├── MouvementStockController.java
+│   └── ProduitController.java
+├── dto/                       # Data Transfer Objects
+│   ├── CommandeFournisseurDTO.java
+│   ├── FournisseurDTO.java
+│   ├── LigneCommandeDTO.java
+│   ├── MouvementStockDTO.java
+│   └── ProduitDTO.java
+├── entity/                    # Entités JPA
+│   ├── CommandeFournisseur.java
+│   ├── Fournisseur.java
+│   ├── LigneCommandeFournisseur.java
+│   ├── MouvementStock.java
+│   ├── Produit.java
+│   └── enums/
+│       ├── StatutCommande.java
+│       └── TypeMouvement.java
+├── exception/                 # Gestion des exceptions
+│   ├── BusinessException.java
+│   ├── GlobalExceptionHandler.java
+│   └── NotFoundException.java
+├── mapper/                    # MapStruct mappers
+│   ├── CommandeFournisseurMapper.java
+│   ├── FournisseurMapper.java
+│   ├── LigneCommandeMapper.java
+│   └── ProduitMapper.java
+├── repository/                # Repositories JPA
+│   ├── CommandeFournisseurRepository.java
+│   ├── FournisseurRepository.java
+│   ├── MouvementStockRepository.java
+│   └── ProduitRepository.java
+├── service/                   # Services métier
+│   ├── CommandeFournisseurService.java
+│   ├── CommandeFournisseurServiceImpl.java
+│   ├── FournisseurService.java
+│   ├── FournisseurServiceImpl.java
+│   ├── MouvementStockService.java
+│   ├── MouvementStockServiceImpl.java
+│   ├── ProduitService.java
+│   └── ProduitServiceImpl.java
+└── util/                      # Utilitaires
+    └── ValorisationUtil.java  # Calcul CUMP
+```
+
+## 💰 Valorisation du Stock
+
+### Méthode CUMP (Coût Unitaire Moyen Pondéré)
+
+Le système utilise la méthode CUMP pour calculer automatiquement le coût moyen des produits :
+
+**Formule** :
+```
+Nouveau CUMP = (Valeur Stock Actuel + Valeur Entrée) / (Quantité Actuelle + Quantité Entrée)
+```
+
+**Exemple** :
+- Stock actuel : 100 unités à 50 DH = 5 000 DH
+- Nouvelle entrée : 50 unités à 60 DH = 3 000 DH
+- **Nouveau CUMP** = (5 000 + 3 000) / (100 + 50) = **53.33 DH**
+
+### Mouvements de Stock
+
+#### Type ENTREE
+- Créé lors de l'ajout d'un produit avec stock initial
+- Créé lors de la mise à jour du stock (augmentation)
+- Recalcule automatiquement le CUMP
+
+#### Type SORTIE
+- Créé automatiquement lors du passage d'une commande au statut `LIVREE`
+- Allocation intelligente multi-produits
+- Vérification du stock disponible avant sortie
+- Mise à jour automatique du stock produit
+
+## 🔧 Commandes Utiles
+
+### Maven
+```bash
+# Nettoyer le projet
+./mvnw clean
+
+# Compiler
+./mvnw compile
+
+# Tester
+./mvnw test
+
+# Packager
+./mvnw package
+
+# Skip tests
+./mvnw package -DskipTests
+
+# Exécuter
+./mvnw spring-boot:run
+```
+
+### Git
+```bash
+# Voir l'historique
+git log --oneline --date=iso -10
+
+# Voir les changements
+git status
+
+# Créer une branche
+git checkout -b feature/nouvelle-fonctionnalite
+```
+
+## 🐛 Résolution de Problèmes
+
+### Port 8080 déjà utilisé
+```yaml
+server:
+  port: 8081
+```
+
+### Erreur Liquibase
+```bash
+# Désactiver temporairement
+spring.liquibase.enabled=false
+```
+
+### Erreur de connexion MySQL
+```bash
+# Vérifier que MySQL est démarré
+sudo systemctl status mysql
+
+# Tester la connexion
+mysql -u tricol_user -p tricol_db
+```
+
+## 📝 License
+
+Ce projet est sous licence MIT.
+
+## 👥 Auteurs
+
+- **Abdelmoudiri** - [GitHub](https://github.com/Abdelmoudiri)
 
 ## 🤝 Contribution
 
-1. Créer une branche pour votre fonctionnalité (`git checkout -b feature/ma-fonctionnalite`)
-2. Commiter vos changements (`git commit -am 'Ajout de ma fonctionnalité'`)
-3. Pousser vers la branche (`git push origin feature/ma-fonctionnalite`)
-4. Ouvrir une Pull Request
+Les contributions sont les bienvenues ! N'hésitez pas à ouvrir une issue ou soumettre une pull request.
 
+1. Fork le projet
+2. Créer une branche (`git checkout -b feature/AmazingFeature`)
+3. Commit vos changements (`git commit -m 'Add some AmazingFeature'`)
+4. Push vers la branche (`git push origin feature/AmazingFeature`)
+5. Ouvrir une Pull Request
 
+## 📧 Contact
 
-**Version** : 2.0.0  
-
+Pour toute question, contactez : [GitHub Issues](https://github.com/Abdelmoudiri/Tricol-fullStack/issues)
