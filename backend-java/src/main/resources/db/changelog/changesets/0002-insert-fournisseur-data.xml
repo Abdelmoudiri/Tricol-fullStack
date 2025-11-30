@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="2" author="abdeljabbar">
+        <insert tableName="fournisseur">
+            <column name="societe" value="TextilePro"/>
+            <column name="adresse" value="123 Avenue des Vêtements"/>
+            <column name="contact" value="John Doe"/>
+            <column name="email" value="contact@textilepro.com"/>
+            <column name="telephone" value="+212600000001"/>
+            <column name="ville" value="Casablanca"/>
+            <column name="ice" value="ICE123456"/>
+        </insert>
+
+        <insert tableName="fournisseur">
+            <column name="societe" value="VêtementsPlus"/>
+            <column name="adresse" value="45 Rue Industrielle"/>
+            <column name="contact" value="Alice Martin"/>
+            <column name="email" value="alice@vetementsplus.com"/>
+            <column name="telephone" value="+212600000002"/>
+            <column name="ville" value="Rabat"/>
+            <column name="ice" value="ICE654321"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>
